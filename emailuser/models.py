@@ -49,6 +49,7 @@ class EmailUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     email = models.EmailField(_('email address'), unique=True)
+    username = models.CharField(_('username'), max_length=75, blank=True)
     is_staff = models.BooleanField(_('staff status'), default=False,
                                    help_text=_('Designates whether the user can log into this admin '
                                                'site.'))
@@ -118,6 +119,10 @@ class EmailUser(AbstractBaseUser, PermissionsMixin):
             except (ImportError, ImproperlyConfigured):
                 raise SiteProfileNotAvailable
         return self._profile_cache
+
+    def save(self, *args, **kwargs):
+        self.username = self.email
+        super(EmailUser, self).save(*args, **kwargs)
 
 
 class PasswordReset(models.Model):
